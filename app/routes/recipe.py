@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_session
 from app.schemas import RecipeResponse, CreateRecipe, RecipeBase, UpdateRecipe
 
-from app import schemas
 from app.operations.recipe import create_new_recipe, get_recipe_by_name, get_recipe_by_id, update_recipe, delete_recipe
 from app.dependencies.auth import get_current_user
 

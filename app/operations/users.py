@@ -1,4 +1,3 @@
-import logging
 from fastapi import HTTPException, status, Depends
 
 from sqlalchemy.future import select
@@ -6,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
 from app.database import get_session
-from app.models import User
+from app.models import Users
 from app.logger import logger
 from app.utils import hash_password, verify_password
 
@@ -16,16 +15,16 @@ async def create_user(
     email: str,
     password: str,
     session: AsyncSession,
-) -> User:
+) -> Users:
     # Duplicate check
-    if await session.scalar(select(User).where(User.name == name)):
+    if await session.scalar(select(Users).where(Users.name == name)):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"User '{name}' already exists.",
         )
 
     try:
-        user = User(
+        user = Users(
             name=name,
             email=email,
             password=hash_password(password),
@@ -51,7 +50,7 @@ async def create_user(
 
 async def login_user(name: str, password: str, session: AsyncSession = Depends(get_session)):
     try:
-        result = await session.execute(select(User).where(User.name == name))
+        result = await session.execute(select(Users).where(Users.name == name))
         user = result.scalars().first()
         if user and verify_password(password, user.password):
             logger.info(f"User '{name}' authenticated")

@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 # Load settings and Base
 from config import settings  # from your config.py
 from app.database import Base
-from app.models import Recipe, User, Ingredient, Step # make sure models are imported
+from app.models import Recipe, Users, Ingredient, Step # make sure models are imported
 
 # Alembic Config object
 config = context.config
@@ -25,7 +25,7 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 # Set the SQLAlchemy URL from Pydantic settings (.env)
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", settings.database_url)
 
 
 def run_migrations_offline() -> None:

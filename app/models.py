@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 
-from pydantic import EmailStr
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Float
+from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -10,15 +9,15 @@ class Recipe(Base):
     __tablename__ = "recipe"
     id = Column(Integer, autoincrement = True, primary_key = True)
     recipe_name = Column(String, nullable= False)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable = False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable = False)
     ingredients = relationship("Ingredient", backref = "recipe", cascade="all, delete-orphan")
     steps = relationship("Step", backref = "recipe", cascade="all, delete-orphan")
-    user = relationship("User", backref="recipe")
+    users = relationship("Users", backref="recipe")
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-class User(Base):
-    __tablename__ = "user"
+class Users(Base):
+    __tablename__ = "users"
     id = Column(Integer, autoincrement = True, primary_key = True)
     name = Column(String, nullable = False)
     email = Column(String, nullable = False)
