@@ -1,9 +1,8 @@
-# -------- Stage 1: Builder --------
-FROM python:3.13-slim as builder
+FROM python:3.13-slim
 
-WORKDIR /install
+WORKDIR /app
 
-# Install build dependencies required for bcrypt, psycopg2, etc.
+# Install system dependencies for bcrypt and psycopg2 etc.
 RUN apt-get update && apt-get install -y \
     gcc \
     libffi-dev \
@@ -12,28 +11,11 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install packages globally
+# Copy and install requirements (globally, without --user)
 COPY requirements.txt .
-
-RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# -------- Stage 2: Final --------
-FROM python:3.13-slim
-
-WORKDIR /app
-
-# Install only runtime dependencies (for bcrypt to run)
-RUN apt-get update && apt-get install -y \
-    libffi-dev \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy installed site-packages and binaries from builder
-COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-
-# Copy application code
+# Copy your application code
 COPY . .
 
 EXPOSE 8000
