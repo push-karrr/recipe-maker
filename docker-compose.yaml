@@ -19,7 +19,7 @@ services:
 #    build:
 #      context: .
 #      dockerfile: Dockerfile
-    command: [ "uvicorn", "app.main:app", "--host", "${HOST}", "--port", "${PORT}", "--reload" ]
+    command: [ "uvicorn", "app.main:app", "--host", "${HOST}", "--port", "${PORT}"]
 
     volumes:
       - .:/app
