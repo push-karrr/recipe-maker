@@ -2,6 +2,11 @@ FROM python:3.13-slim as builder
 
 WORKDIR /app
 
+# Install required build tools and libraries
+RUN apt-get update && apt-get install -y gcc libffi-dev libssl-dev python3-dev musl-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+
 COPY requirements.txt /install/requirements.txt
 
 RUN pip install --no-cache-dir --user -r /install/requirements.txt
