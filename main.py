@@ -1,15 +1,24 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+from contextlib import asynccontextmanager
 
+from app.database import engine, Base
 from app.logger import logger
 from app.routes.recipe import router as recipe_router
 from app.routes.users import router as users_router
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+
 app = FastAPI(
     title= "Recipe Manager",
     description="System ",
-    version="1.0"
+    version="1.0",
+    lifespan=lifespan
 )
 
 app.add_middleware(

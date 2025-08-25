@@ -11,7 +11,7 @@ from app.utils import create_access_token
 
 router = APIRouter(prefix="/users/v1", tags=["users"])
 
-@router.post("/create", response_model=schemas.UserResponse)
+@router.post("/register", response_model=schemas.UserResponse)
 async def create_user_(
         user: schemas.UserCreate,
         session: AsyncSession = Depends(get_session),
@@ -21,17 +21,16 @@ async def create_user_(
 
 @router.post("/login")
 async def login(
-        username: str,
-        password: str,
+        request: schemas.LoginRequest,
         session: AsyncSession = Depends(get_session)
 ):
-    user = await login_user(name=username, password=password, session=session)
+    user = await login_user(name=request.username, password=request.password, session=session)
     if not user:
-        logger.info(f"User {username} not found.")
+        logger.info(f"User {request.username} not found.")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
         )
-    logger.info(f"User {username} logged in successfully.")
+    logger.info(f"User {request.username} logged in successfully.")
     access_token = create_access_token(data={"sub": str(user.id)}, expires_delta=timedelta(hours=0.5))
     return {"access_token": access_token, "token_type": "bearer"}
 
